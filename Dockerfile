@@ -1,13 +1,15 @@
 FROM python:3.9.5-alpine
 
-RUN mkdir -p /opt/app-root/src
+ENV APP_HOME /opt/app-root/src
 
-WORKDIR /opt/app-root/src
+RUN mkdir -p ${APP_HOME}
 
-ADD mqtt_exporter.py /opt/app-root/src/mqtt_exporter.py
-ADD requirements.txt /opt/app-root/src/requirements.txt
+WORKDIR ${APP_HOME}
+
+ADD mqtt_exporter.py ${APP_HOME}/mqtt_exporter.py
+ADD requirements.txt ${APP_HOME}/requirements.txt
 
 RUN pip install -r requirements.txt && \
-    chmod -R g=rwx /opt/app-root/src
+    chmod -R g=rwx ${APP_HOME}
 
-CMD 'mqtt_exporter.py'
+CMD "${APP_HOME}/mqtt_exporter.sh"

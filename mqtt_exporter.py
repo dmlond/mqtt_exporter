@@ -9,8 +9,6 @@ import yaml
 
 required_environment = [
     'QUEUE_STREAM_FILE',
-    'MQTT_USER',
-    'MQTT_PASSWORD',
     'MQTT_HOST',
     'MQTT_PORT'
 ]
@@ -35,40 +33,32 @@ def load_queues():
         with open(os.environ['QUEUE_STREAM_FILE'], 'r') as queue_stream:
             queue_definitions = yaml.load(queue_stream, Loader=yaml.SafeLoader)
             for queue, spec in queue_definitions.items():
-                queues[queue] = exporter_for(*spec)
+                if queue not in queues:
+                    print(f'creating {spec} for {queue}')
+                    queues[queue] = exporter_for(*spec)
 
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     for queue in queues.keys():
+        print(f'subscribing to {queue}')
         client.subscribe(queue)
 
 def on_message(client, userdata, msg):
     topic = msg.topic
     payload = msg.payload
+    print(f'publishing {topic} metric {payload}')
     queues[topic].set(payload)
 
 client = mqtt.Client()
 
-def reload(signum, frame):
-    print('reloading config')
-    client.loop_stop()
-    run_main()
-
-def run_main(**kwargs):
-    # load_queus if present, then Start up the server to expose the metrics.
-    load_queues()
-    client.loop_start()
-
-# load_queues on HUP
-signal.signal(signal.SIGHUP, reload)
-
 if __name__ == '__main__':
-    client.username_pw_set(os.environ['MQTT_USER'],os.environ['MQTT_PASSWORD'])
+    load_queues()
+    if 'MQTT_USER' in os.environ:
+      client.username_pw_set(os.environ['MQTT_USER'],os.environ['MQTT_PASSWORD'])
     client.on_connect = on_connect
     client.on_message = on_message
-    client.connect(os.environ['MQTT_HOST'],os.environ['MQTT_PORT'],60)
+    client.connect(os.environ['MQTT_HOST'],int(os.environ['MQTT_PORT']),60)
+
     start_http_server(8000)
-    while True:
-        run_main()
+    client.loop_forever()
