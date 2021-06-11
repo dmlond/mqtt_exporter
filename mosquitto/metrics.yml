@@ -1,0 +1,12 @@
+greenhouse/light:
+  - 'Guage'
+  - 'greenhouse_light'
+  - 'Ambient Light in Lumens'
+greenhouse/temperature:
+  - 'Guage'
+  - 'greenhouse_temperature'
+  - 'Temperature in C'
+greenhouse/humidity:
+  - 'Guage'
+  - 'greenhouse_humidity'
+  - '% Humidity'

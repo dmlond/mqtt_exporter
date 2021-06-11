@@ -1,0 +1,17 @@
+{
+	"name": "mqtt-exporter container",
+	"dockerComposeFile": [
+		"../docker-compose.yml",
+		"docker-compose.yml"
+	],
+	"service": "exporter",
+	"workspaceFolder": "/workspace",
+	"settings": { 
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [],
+	"runServices": [
+           "exporter",
+		   		 "mqtt"
+        ],
+}

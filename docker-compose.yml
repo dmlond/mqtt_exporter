@@ -1,0 +1,12 @@
+version: '3'
+services:
+  exporter:
+    image: python:3.9.5
+    env_file:
+      - exporter.env
+    ports:
+      - 8000:8000
+  mqtt:
+    image: 'eclipse-mosquitto:2.0.10'
+    volumes:
+      - ./mosquitto:/mosquitto
