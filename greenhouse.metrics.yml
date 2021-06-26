@@ -1,0 +1,9 @@
+greenhouse/light:
+  - 'greenhouse-light'
+  - 'Ambient Light in Lumens'
+greenhouse/temperature:
+  - 'greenhouse-temperature'
+  - 'Temperature in C'
+greenhouse/humidity:
+  - 'greenhouse-humidity'
+  - '% Humidity'
