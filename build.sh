@@ -16,4 +16,4 @@ then
 fi
 
 docker buildx build --platform linux/arm/v7 -o type=registry,registry.insecure=true -t registry.k3s.iot/mqtt_exporter:${VERSION} .
-echo "built mqtt_exporter.${VERSION}.tar"
+echo "built mqtt_exporter.${VERSION}"
