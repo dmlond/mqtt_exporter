@@ -11,7 +11,9 @@ reload() {
 
 trap reload SIGHUP
 
-while true
-do
-  : # do nothing
-done
+wait $exporter_pid
+if [ $? -gt 0 ]
+then
+  echo "PROBLEM!" >&2
+  exit 1
+fi
