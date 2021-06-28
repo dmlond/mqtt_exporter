@@ -1,0 +1,34 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "fullname" . }}-mqtt-exporter-config
+  labels:
+    app.kubernetes.io/name: mqtt-exporter
+    app.kubernetes.io/instance: {{ .Release.Name }}
+type: Opaque
+stringData:
+  {{ .Values.mqttExporter.streamFile }}: |
+  {{- if .Values.mqttExporter.configFile }}
+{{ .Values.mqttExporter.configFile | indent 4 }}
+  {{- else }}
+    mqttest:
+      - 'Guage'
+      - 'test'
+      - 'a test gauge'
+  {{- end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "fullname" . }}-mqtt-exporter-environment
+  labels:
+    app.kubernetes.io/name: mqtt-exporter
+    app.kubernetes.io/instance: {{ .Release.Name }}
+type: Opaque
+stringData:
+    QUEUE_STREAM_FILE: {{ .Values.mqttExporter.configPath }}/{{ .Values.mqttExporter.streamFile }}
+    MQTT_USER: {{ .Values.mosquitto.user }}
+    MQTT_PASSWORD: {{ .Values.mosquitto.password }}
+    MQTT_HOST: {{ .Values.mosquitto.host }}
+    MQTT_PORT: {{ .Values.mosquitto.port | quote }}

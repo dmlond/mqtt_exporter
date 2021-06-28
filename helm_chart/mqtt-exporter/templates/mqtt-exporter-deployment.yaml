@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: mqtt-exporter
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app: {{ include "fullname" . }}-metrics
+  name: {{ include "fullname" . }}-mqtt-exporter
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mqtt-exporter
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mqtt-exporter
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ include "fullname" . }}-mqtt-exporter
+          image: {{ .Values.mqttExporter.image }}:{{ .Values.mqttExporter.tag }}
+          envFrom:
+            - secretRef:
+                name: {{ include "fullname" . }}-mqtt-exporter-environment
+          ports:
+            - containerPort: {{ .Values.mqttExporter.internalPort }}
+              name: export-port
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: '/metrics'
+              port: {{ .Values.mqttExporter.internalPort }}
+              scheme: 'HTTP'
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+          volumeMounts:
+            - mountPath: {{ .Values.mqttExporter.configPath }}
+              name: {{ include "fullname" . }}-mqtt-exporter-config
+      volumes:
+        - name: {{ include "fullname" . }}-mqtt-exporter-config
+          secret:
+            secretName: {{ include "fullname" . }}-mqtt-exporter-config
+      restartPolicy: Always
