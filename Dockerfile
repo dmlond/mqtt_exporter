@@ -2,7 +2,10 @@ FROM python:3.9.5-alpine
 
 ENV APP_HOME /opt/app-root/src
 
-RUN mkdir -p ${APP_HOME}
+RUN mkdir -p ${APP_HOME} \
+    && apk update \
+    && apk upgrade \
+    && apk add bash
 
 WORKDIR ${APP_HOME}
 
