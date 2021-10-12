@@ -35,11 +35,4 @@ spec:
             periodSeconds: 5
             successThreshold: 1
             timeoutSeconds: 1
-          volumeMounts:
-            - mountPath: {{ .Values.mqttExporter.configPath }}
-              name: {{ include "fullname" . }}-mqtt-exporter-config
-      volumes:
-        - name: {{ include "fullname" . }}-mqtt-exporter-config
-          secret:
-            secretName: {{ include "fullname" . }}-mqtt-exporter-config
       restartPolicy: Always
